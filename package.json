@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "nodemon -r src --exec ts-node",
-    "run": "ts-node src/index.ts",
+    "start": "nodemon src/index.ts --exec ts-node",
     "build": "tsc"
   },
   "repository": {
