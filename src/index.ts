@@ -18,21 +18,57 @@ const PORT = 4001;
 const app = express();
 
 const typeDefs = gql`
-  type Card {
-    id: ID!
-    title: String
-    description: String  
-  }
 
-  type Query {
-    cards: [Card]
-  }
+    #  Inputs
+
+    input AddCardInput {
+        title: String!
+        description: String
+        theme: ID!
+    }
+    
+    input EditCardInput {
+        id: ID!
+        title: String
+        description: String
+    }
+
+    input DeleteCardInput {
+        id: ID!
+    }
+
+    #  Query types
+    
+    type Card {
+        _id: ID!
+        title: String
+        description: String
+        theme: ID!
+    }
+    
+    type Query {
+        cards: [Card]
+    }
+
+    type Mutation {
+        addCard(input: AddCardInput): Card
+#        editCard(input: EditCardInput): Card
+        deleteCard(input: DeleteCardInput): Card
+    }
 `;
 
 const resolvers = {
   Query: {
     cards: (parent: any, args: any, context: Context): Promise<Card[]> => {
       return context.dataSources.storageAPI.getCards();
+    }
+  },
+  Mutation: {
+    addCard: (parent: any, args: any, context: Context) => {
+      return context.dataSources.storageAPI.addCard(args);
+    },
+    deleteCard: (parent: any, args: any, context: Context) => {
+      return context.dataSources.storageAPI.deleteCard(args);
     }
   }
 };
@@ -51,6 +87,8 @@ server.applyMiddleware({ app, path: PATH });
 
 app.listen({ port: PORT }, () =>
   console.info(
-    `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
+    `🚀 Server ready at http://localhost:${ PORT }${ server.graphqlPath }`
   )
 );
+
+
