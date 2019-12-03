@@ -3,11 +3,17 @@ import { RESTDataSource } from "apollo-datasource-rest";
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
-export interface Card {
-  id: string;
+export interface ICard {
+  _id: string;
   title: string;
   description: string;
   theme: string;
+}
+
+export interface ITheme {
+  _id
+  name
+  description
 }
 
 const dbName = 'flashcards';
@@ -23,21 +29,26 @@ export class StorageAPI extends RESTDataSource {
           db = client.db(dbName);
           resolve(db)
         } else {
-          console.error('error during connection', err);
+          console.error('error during connection attempt', err);
           reject(err)
         }
       });
     })
   }
 
-  async getCards(): Promise<Card[]> {
+  async getThemes (): Promise<ITheme[]> {
     const db: any = await this.connect();
-    const collection = await db.collection('cards');
-    const res = await collection.find({}).toArray();
-    return res.map(item => ({ ...item, id: item._id }));
+    const collection = await db.collection('themes');
+    return  collection.find({}).toArray();
   }
 
-  async addCard(args): Promise<Card> {
+  async getCards(): Promise<ICard[]> {
+    const db: any = await this.connect();
+    const collection = await db.collection('cards');
+    return collection.find({}).toArray();
+  }
+
+  async addCard(args): Promise<ICard> {
     const {title, description, theme} = args.input;
     const db: any = await this.connect();
     const collection = await db.collection('cards');
@@ -56,5 +67,4 @@ export class StorageAPI extends RESTDataSource {
     const result = await collection.deleteOne({ _id: ObjectID(id)});
     return result.deletedCount;
   }
-
 }

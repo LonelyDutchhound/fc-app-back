@@ -1,7 +1,7 @@
 import express = require("express");
 import { ApolloServer } from "apollo-server-express";
 import gql from "graphql-tag";
-import { StorageAPI, Card } from "./dataSource";
+import { StorageAPI, ICard, ITheme } from "./dataSource";
 import { DataSources } from "apollo-server-core/dist/graphqlOptions";
 
 export interface MySources {
@@ -46,8 +46,15 @@ const typeDefs = gql`
         theme: ID!
     }
     
+    type Theme {
+        _id: ID!
+        name: String!
+        description: String
+    }
+    
     type Query {
         cards: [Card]
+        themes: [Theme]
     }
 
     type Mutation {
@@ -59,8 +66,11 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    cards: (parent: any, args: any, context: Context): Promise<Card[]> => {
+    cards: (parent: any, args: any, context: Context): Promise<ICard[]> => {
       return context.dataSources.storageAPI.getCards();
+    },
+    themes: (parent: any, args: any, context: Context): Promise<ITheme[]> => {
+      return context.dataSources.storageAPI.getThemes();
     }
   },
   Mutation: {
