@@ -48,12 +48,12 @@ const typeDefs = gql`
     
     type Theme {
         _id: ID!
-        name: String!
+        title: String!
         description: String
     }
     
     type Query {
-        cards: [Card]
+        cards(theme: String): [Card]
         themes: [Theme]
     }
 
@@ -67,7 +67,8 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     cards: (parent: any, args: any, context: Context): Promise<ICard[]> => {
-      return context.dataSources.storageAPI.getCards();
+      console.log(args)
+      return context.dataSources.storageAPI.getCards(args);
     },
     themes: (parent: any, args: any, context: Context): Promise<ITheme[]> => {
       return context.dataSources.storageAPI.getThemes();

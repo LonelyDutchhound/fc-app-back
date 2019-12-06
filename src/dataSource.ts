@@ -1,4 +1,4 @@
-import { RESTDataSource } from "apollo-datasource-rest";
+import { DataSource } from "apollo-datasource";
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
@@ -12,7 +12,7 @@ export interface ICard {
 
 export interface ITheme {
   _id
-  name
+  title
   description
 }
 
@@ -20,7 +20,7 @@ const dbName = 'flashcards';
 const dbUrl = 'mongodb://localhost:27017';
 const client = new MongoClient(dbUrl, { useUnifiedTopology: true });
 
-export class StorageAPI extends RESTDataSource {
+export class StorageAPI extends DataSource {
   private connect() {
     let db;
     return new Promise((resolve, reject) => {
@@ -42,10 +42,10 @@ export class StorageAPI extends RESTDataSource {
     return  collection.find({}).toArray();
   }
 
-  async getCards(): Promise<ICard[]> {
+  async getCards(args): Promise<ICard[]> {
     const db: any = await this.connect();
     const collection = await db.collection('cards');
-    return collection.find({}).toArray();
+    return collection.find({'theme': ObjectID(args.theme)}).toArray();
   }
 
   async addCard(args): Promise<ICard> {
